@@ -169,6 +169,9 @@ apply_defs(Body, Username, SuccessFun, ErrorFun) ->
             ErrorFun(E);
         {ok, _, All} ->
             Version = maps:get(rabbit_version, All, undefined),
+            % TODO VALIDATE QUEUE LIMITS PER-VHOST
+            % Group queues by vhost in data, get counts, validate
+            % rabbit_vhost_limit:is_over_queue_limit(VHost),
             try
                 for_all(users,              Username, All,
                         fun(User, _Username) ->
@@ -197,6 +200,8 @@ apply_defs(Body, Username, SuccessFun, ErrorFun, VHost) ->
         {error, E} ->
             ErrorFun(E);
         {ok, _, All} ->
+            % TODO VALIDATE LIMITS
+            % rabbit_vhost_limit:is_over_queue_limit(VHost),
             try
                 for_all(policies,    Username, All, VHost, fun add_policy/3),
                 for_all(queues,      Username, All, VHost, fun add_queue/3),
